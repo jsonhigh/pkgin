@@ -56,6 +56,8 @@ jobs:
             CFLAGS="${CFLAGS} -I/tmp/destdir/usr/include"
             LDFLAGS="-L${GITHUB_WORKSPACE}/pkgsrc/pkgtools/libnbcompat/files"
             LDFLAGS="${LDFLAGS} -L/tmp/destdir/usr/lib"
+            export PKGSRC_MACHINE_ARCH=x86_64
+            export OPSYS=Linux
             export LDFLAGS
             export LIBS="-lnbcompat"
             ./configure --prefix=/usr
