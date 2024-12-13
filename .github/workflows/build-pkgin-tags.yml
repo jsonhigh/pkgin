@@ -115,7 +115,7 @@ jobs:
             sudo cp build/pkgin /usr/local/bin/pkgin-"$tag"
             rm -rf build
           done
-          tar -czvf pkgin-bins.tar.gz /usr/local/{bin,sbin}
+          tar -czvf pkgin-bins.tar.gz /usr/local/{bin/pkgin-*,sbin/pkg*}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
