@@ -19,6 +19,7 @@ jobs:
             libarchive-dev \
             libsqlite3-dev \
             libssl-dev
+          sudo mkdir -p /usr/local/{bin,sbin}
           mkdir ~/.ssh
           ssh-keyscan anoncvs.netbsd.org >>~/.ssh/known_hosts
           cvs -d anoncvs@anoncvs.netbsd.org:/cvsroot co -P \
@@ -60,9 +61,9 @@ jobs:
             export OPSYS=Linux
             export LDFLAGS
             export LIBS="-lnbcompat"
-            ./configure --prefix=/usr
+            ./configure --prefix=/usr/local
             bmake
-            bmake DESTDIR=/tmp/destdir install
+            sudo bmake install
           )
       - name: Build each tag
         run: |
@@ -91,7 +92,7 @@ jobs:
               v0.*)
                 CONFIGURE_ARGS="${CONFIGURE_ARGS} --with-libraries=/tmp/destdir/usr/lib"
                 CONFIGURE_ARGS="${CONFIGURE_ARGS} --with-includes=/tmp/destdir/usr/include"
-                CONFIGURE_ARGS="${CONFIGURE_ARGS} --with-pkginstall=/tmp/destdir/usr/sbin"
+                CONFIGURE_ARGS="${CONFIGURE_ARGS} --with-pkginstall=/usr/local/sbin"
                 ;;
               *)
                 CONFIGURE_ARGS="${CONFIGURE_ARGS} --disable-maintainer-mode"
@@ -101,7 +102,7 @@ jobs:
                 CONFIGURE_ARGS="${CONFIGURE_ARGS} --with-openssl=/usr"
                 CONFIGURE_ARGS="${CONFIGURE_ARGS} --with-sqlite3=/usr"
                 CONFIGURE_ARGS="${CONFIGURE_ARGS} --with-machine-arch=x86_64"
-                CONFIGURE_ARGS="${CONFIGURE_ARGS} --with-pkg-install=/tmp/destdir/usr/sbin"
+                CONFIGURE_ARGS="${CONFIGURE_ARGS} --with-pkg-install=/usr/local/sbin"
                 ;;
               esac
               env \
@@ -111,11 +112,10 @@ jobs:
               ../configure ${CONFIGURE_ARGS} || (cat config.log && ./configure --help && false)
               bmake || make V=1
             )
-            mv build/pkgin bin/pkgin-"$tag"
+            sudo cp build/pkgin /usr/local/bin/pkgin-"$tag"
             rm -rf build
           done
-          cp /tmp/destdir/usr/sbin/pkg_* ./bin
-          tar -czvf pkgin-bins.tar.gz ./bin
+          tar -czvf pkgin-bins.tar.gz /usr/local/{bin,sbin}
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
