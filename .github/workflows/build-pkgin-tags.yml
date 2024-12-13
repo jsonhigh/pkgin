@@ -39,6 +39,7 @@ jobs:
             cd pkgsrc/net/libfetch/files
             export BINOWN="$(id -un)"
             export ROOT_GROUP="$(id -gn)"
+            export FETCH_WITH_INET6=yes
             bmake
             bmake DESTDIR=/tmp/destdir install
           )
